@@ -1,0 +1,26 @@
+# Données broutes et volumineuses
+data/raw/
+data/processed/*.csv
+data/processed/*.parquet
+!data/processed/.gitkeep
+
+# Modèles entraînés (peuvent être gros)
+data/models/*.pkl
+data/models/*.joblib
+
+# Environnements virtuels
+venv/
+env/
+.venv/
+
+# Fichiers de logs
+logs/
+*.log
+
+# Fichiers de configuration secrets
+.env
+.env.local
+
+# Notebooks avec résultats (optionnel mais conseillé)
+notebooks/*.ipynb
+!notebooks/*.ipynb  # si tu veux versionner certains notebooks vides
