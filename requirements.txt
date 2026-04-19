@@ -1,0 +1,188 @@
+# ============================================
+# AgriClima360 - Core Dependencies
+# Projet: Analyse d'Impact Climatique sur Agriculture
+# ============================================
+
+# === DATA PROCESSING & MANIPULATION ===
+numpy==1.24.3
+pandas==2.0.3
+polars==0.19.12          # Alternative rapide pour gros volumes
+dask[complete]==2023.9.0 # Pour données > RAM
+pyarrow==13.0.0          # Format Parquet
+numexpr==2.8.7           # Optimisation calculs numpy
+
+# === GEOSPATIAL DATA ===
+geopandas==0.14.1
+shapely==2.0.1
+rasterio==1.3.9
+xarray==2023.9.0         # Données climatiques netCDF
+netCDF4==1.6.5           # Format NOAA standard
+rioxarray==0.14.1        # Extension raster pour xarray
+
+# === FEATURE ENGINEERING ===
+scikit-learn==1.3.0
+scipy==1.11.2
+statsmodels==0.14.0      # Tests statistiques, SPI/SPEI
+tsfresh==0.20.1          # Extraction features temporelles
+featuretools==1.29.0     # Feature engineering automatisé
+category_encoders==2.6.3 # Encodages variables catégorielles
+
+# === CLIMATE SPECIFIC INDICES ===
+climetlab==0.19.0        # Indices climatiques
+xclim==0.44.0            # Indices climatologiques extrêmes
+climate-indices==0.2.0   # SPI, SPEI, PDSI
+wetterdienst==0.75.0     # Accès données météo allemandes
+
+# === MACHINE LEARNING - CLASSIFICATION & REGRESSION ===
+xgboost==1.7.6
+lightgbm==4.0.0
+catboost==1.2.2
+scikit-learn==1.3.0
+scikit-optimize==0.9.0   # Hyperparameter optimization
+optuna==3.3.0            # Hyperparameter tuning avancé
+hyperopt==0.2.7
+
+# === ENSEMBLE METHODS ===
+imbalanced-learn==0.11.0 # SMOTE pour classes déséquilibrées
+mlxtend==0.23.1          # Stacking, voting classifiers
+
+# === TIME SERIES & REGRESSION SPECIFIC ===
+prophet==1.1.5           # Forecasting météo/rendements
+sktime==0.24.0           # Time series ML
+pmdarima==2.0.4          # ARIMA automatique
+tbats==1.1.2             # TBATS models
+
+# === DEEP LEARNING ===
+tensorflow==2.13.0
+keras==2.13.1
+torch==2.0.1
+pytorch-lightning==2.0.9
+transformers==4.35.0     # Pour modèles temps long
+
+# === CLUSTERING & DIMENSIONALITY REDUCTION ===
+umap-learn==0.5.5        # UMAP pour visualisation clustering
+hdbscan==0.8.33          # Clustering hiérarchique
+yellowbrick==1.5         # Visualisation clustering
+fast-pca==0.2.0          # PCA rapide pour grandes données
+
+# === MODEL INTERPRETATION ===
+shap==0.42.1             # SHAP values
+lime==0.2.0.1           # Explications locales
+eli5==0.13.0            # Importance features
+pdpbox==0.3.0           # Partial dependence plots
+interpret==0.4.0        # Microsoft InterpretML
+
+# === MODEL EVALUATION ===
+scikit-learn==1.3.0
+model-evaluation==0.1.0
+permutation-importance==1.3.0
+
+# === VISUALIZATION ===
+matplotlib==3.7.2
+seaborn==0.12.2
+plotly==5.17.0
+bokeh==3.3.0
+folium==0.15.0           # Cartes interactives
+mapclassify==2.6.0       # Classification cartographique
+geoplot==0.5.0           # Cartes statistiques
+cartopy==0.22.0          # Projections cartographiques
+holoviews==1.17.1
+hvplot==0.8.4            # Visualisation interactive rapide
+wordcloud==1.9.3
+
+# === STREAMLIT DASHBOARD ===
+streamlit==1.27.0
+streamlit-option-menu==0.3.6
+streamlit-aggrid==0.3.4
+streamlit-echarts==0.2.0
+streamlit-plotly-events==0.0.6
+streamlit-extras==0.3.5
+streamlit-authenticator==0.1.5  # Authentification
+
+# === DATABASE & DATA STORAGE ===
+sqlalchemy==2.0.21
+psycopg2-binary==2.9.9   # PostgreSQL
+sqlite3
+duckdb==0.9.1            # OLAP rapide
+h5py==3.9.0              # Stockage données scientifiques
+
+# === API & WEB SERVICES ===
+requests==2.31.0
+fastapi==0.104.0
+uvicorn==0.24.0
+httpx==0.25.0
+aiohttp==3.8.6          # Async requests pour NOAA
+
+# === NOAA SPECIFIC ACCESS ===
+noaa-sdk==1.0.0          # SDK officiel NOAA
+siphon==0.9.0            # Accès données météo
+metpy==1.5.0             # Calculs météorologiques
+xarray-datatree==0.0.13  # Arbres de données hiérarchiques
+
+# === AUTOMATION & PIPELINE ===
+prefect==2.13.5          # Orchestration pipelines
+dagster==1.5.0           # Alternative pipeline
+apache-airflow==2.7.2    # Pour déploiement production
+celery==5.3.4            # Tâches asynchrones
+redis==5.0.1             # Cache et queue
+
+# === QUALITY ASSURANCE ===
+great-expectations==0.18.3  # Validation données
+pydantic==2.4.0          # Validation schémas
+cerberus==1.3.5          # Validation légère
+marshmallow==3.20.1
+
+# === LOGGING & MONITORING ===
+loguru==0.7.2            # Logging avancé
+mlflow==2.7.1            # Tracking modèles
+wandb==0.15.10           # Weights & Biases
+tensorboard==2.13.0
+
+# === TESTING ===
+pytest==7.4.2
+pytest-cov==4.1.0
+pytest-mock==3.11.1
+pytest-xdist==3.3.1      # Tests parallèles
+hypothesis==6.87.0       # Property-based testing
+
+# === CODE QUALITY ===
+black==23.9.1
+flake8==6.1.0
+pylint==3.0.0
+mypy==1.5.1
+pre-commit==3.5.0
+
+# === UTILITIES ===
+tqdm==4.66.1             # Barres progression
+joblib==1.3.2            # Parallélisation simple
+dill==0.3.7              # Sérialisation objets complexes
+pyyaml==6.0.1            # Fichiers config
+python-dotenv==1.0.0     # Variables environnement
+click==8.1.7             # CLI arguments
+rich==13.6.0             # Terminal formatting
+colorama==0.4.6
+tabulate==0.9.0          # Table formatting
+
+# === DOCUMENTATION ===
+sphinx==7.2.6
+sphinx-rtd-theme==1.3.0
+myst-parser==2.0.0       # Markdown dans Sphinx
+mkdocs==1.5.3            # Documentation moderne
+mkdocs-material==9.4.6
+
+# === DEPLOYMENT ===
+docker==6.1.3
+kubernetes==26.1.0
+ray==2.7.1               # Déploiement distribué
+dask-kubernetes==2023.9.0
+
+# === JUPYTER NOTEBOOK SUPPORT ===
+ipython==8.15.0
+jupyter==1.0.0
+ipykernel==6.25.1
+nbconvert==7.8.0
+jupyterlab==4.0.6
+
+# === OPTIONAL BUT RECOMMENDED ===
+cudf-cu11==23.8.0        # GPU DataFrames (si NVIDIA)
+cuml-cu11==23.8.0        # GPU ML (si NVIDIA)

@@ -1,0 +1,35 @@
+agricultural_features:
+  gdd:
+    base_temperature: 10
+    max_temperature: 30
+    method: "simple"  # ou "sinusoidal"
+  
+  water_stress:
+    indices: ["spi", "spei", "pdsi"]
+    windows: [30, 90, 180]  # jours
+    
+  extreme_events:
+    heat_wave_threshold: 35  # °C
+    cold_night_threshold: 5   # °C
+    heavy_rain_threshold: 50  # mm/jour
+
+temporal_features:
+  growing_season:
+    northern_hemisphere: [3, 4, 5, 6, 7, 8, 9]
+    southern_hemisphere: [9, 10, 11, 12, 1, 2, 3]
+  
+  lag_features: [1, 2, 3]  # années
+  rolling_windows: [7, 30, 90]  # jours
+
+feature_selection:
+  classification:
+    method: "mutual_info"
+    n_features: 15
+    
+  regression:
+    method: "rfe"
+    n_features: 20
+    
+  clustering:
+    method: "pca"
+    n_components: 10
