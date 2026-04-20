@@ -82,6 +82,28 @@ with st.sidebar:
         </p>
     </div>
     """, unsafe_allow_html=True)
+    # NOUVEAU : LIEN VERS L'APPLICATION DE VISUALISATION
+    # =============================================================
+    st.markdown("### 🌍 AgriClima360 ")
+    st.markdown("""
+    <div style="background: #fffff5; border-radius: 8px; padding: 12px; margin: 8px 0; text-align: center;">
+        <a href="https://adnane-dev-climat-imapct-agricole-appstreamlit-app-tcnmcu.streamlit.app/" target="_blank" style="
+            color: #4ade80; 
+            text-decoration: none; 
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.70rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        ">
+            🌍 AgriClima360
+            <span style="font-size: 0.7rem;">↗</span>
+        </a>
+        <p style="font-size: 10px; color: #6b9e7a; margin-top: 6px;">
+            Analyse Climatique Intelligente
+        </p>
+    </div>
+    """, unsafe_allow_html=True)    
     st.markdown("---")
     st.markdown("**Équipe**")
     st.markdown("Adnane · Radhia · Abdallah")
