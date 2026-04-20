@@ -2,7 +2,19 @@
 # AgriClima360 - Core Dependencies
 # Projet: Analyse d'Impact Climatique sur Agriculture
 # ============================================
+# Core
+streamlit==1.35.0
+pandas==2.2.0
+numpy==1.26.3
+plotly==5.18.0
 
+# Machine Learning
+scikit-learn==1.4.0
+joblib==1.3.2
+
+# API & Utilitaires
+requests==2.31.0
+python-dotenv==1.0.0
 # === DATA PROCESSING & MANIPULATION ===
 numpy==1.24.3
 pandas==2.0.3
