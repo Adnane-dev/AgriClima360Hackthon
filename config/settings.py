@@ -3,8 +3,7 @@
 # =============================================================
 
 # --- Clés API (à remplacer par vos clés réelles) ---
-NOAA_TOKEN = "oAlEkhGLpUtHCIGoUOepslRpcWmtLJMM"  # Token de démonstration
-# Obtenez votre token gratuit sur : https://www.ncdc.noaa.gov/cdo-web/token
+NOAA_TOKEN = "oAlEkhGLpUtHCIGoUOepslRpcWmtLJMM"
 
 # --- Paramètres Tunisie ---
 TUNISIA_STATIONS = {
@@ -36,3 +35,9 @@ DEFAULT_START_YEAR = 2000
 DEFAULT_END_YEAR = 2024
 DEFAULT_CROP = "Blé dur"
 DEFAULT_REGION_PRCP = 500  # mm/an
+
+# =============================================================
+# FEATURES POUR MACHINE LEARNING
+# =============================================================
+FEATURES_CLASSIFICATION = ["tavg_mean", "tmax_mean", "prcp_total", "gdd_total", "heatwave_days", "wdi_mean"]
+FEATURES_REGRESSION = ["tavg_mean", "tmax_mean", "prcp_total", "gdd_total", "heatwave_days", "wdi_mean", "diurnal_range", "temp_x_prcp"]
