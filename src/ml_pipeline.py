@@ -1,15 +1,27 @@
-# =============================================================
-# Pipeline Machine Learning : Classification, Régression, Clustering
-# =============================================================
-
+# src/ml_pipeline.py
 import pandas as pd
 import numpy as np
 import pickle
 import joblib
 import streamlit as st
 from datetime import datetime
-from config.settings import FEATURES_CLASSIFICATION, FEATURES_REGRESSION
 
+# =============================================================
+# FALLBACK - Définitions par défaut (si config.settings est absent)
+# =============================================================
+FEATURES_CLASSIFICATION_DEFAULT = ["tavg_mean", "tmax_mean", "prcp_total", "gdd_total", "heatwave_days", "wdi_mean"]
+FEATURES_REGRESSION_DEFAULT = ["tavg_mean", "tmax_mean", "prcp_total", "gdd_total", "heatwave_days", "wdi_mean", "diurnal_range", "temp_x_prcp"]
+
+# Tentative d'import depuis config.settings
+try:
+    from config.settings import FEATURES_CLASSIFICATION, FEATURES_REGRESSION
+    print("✅ Import depuis config.settings réussi")
+except ImportError:
+    FEATURES_CLASSIFICATION = FEATURES_CLASSIFICATION_DEFAULT
+    FEATURES_REGRESSION = FEATURES_REGRESSION_DEFAULT
+    print("⚠️ Utilisation des valeurs par défaut pour les features")
+
+# Import ML
 try:
     from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
     from sklearn.cluster import KMeans
@@ -24,6 +36,10 @@ except ImportError:
 class MLPipeline:
     """Pipeline ML complet pour l'agriculture."""
     
+    # Utiliser les variables définies
+    FEATURES_CLASSIFICATION = FEATURES_CLASSIFICATION
+    FEATURES_REGRESSION = FEATURES_REGRESSION
+    
     def __init__(self):
         self.clf_model = None
         self.reg_model = None
@@ -32,6 +48,8 @@ class MLPipeline:
         self.results_clf = {}
         self.results_reg = {}
         self.results_kmeans = {}
+    
+    # ... (reste du code inchangé)}
     
     def train_classifier(self, df: pd.DataFrame, target="drought_alert", features=None):
         """Entraîne un classifieur RandomForest pour la prédiction de sécheresse."""
