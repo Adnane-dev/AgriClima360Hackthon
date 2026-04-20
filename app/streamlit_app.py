@@ -59,7 +59,29 @@ with st.sidebar:
         "🚀 4. Mise en production",
         "🏆 Dashboard Impact"
     ], label_visibility="collapsed")
-    
+        # =============================================================
+    # NOUVEAU : LIEN VERS L'APPLICATION DE VISUALISATION
+    # =============================================================
+    st.markdown("### Visualisation ")
+    st.markdown("""
+    <div style="background: #fffff4; border-radius: 8px; padding: 12px; margin: 8px 0; text-align: center;">
+        <a href="https://agriclima360-f.streamlit.app/" target="_blank" style="
+            color: #4ade80; 
+            text-decoration: none; 
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.70rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        ">
+             Découvrir AgriClima360-Vis
+            <span style="font-size: 0.7rem;">↗</span>
+        </a>
+        <p style="font-size: 10px; color: #6b9e7a; margin-top: 6px;">
+            Visualisation de données massives<br>Datashader + HoloViews + Dask
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
     st.markdown("---")
     st.markdown("**Équipe**")
     st.markdown("Adnane · Radhia · Abdallah")
@@ -74,6 +96,7 @@ with st.sidebar:
     for step, done in steps_status.items():
         icon = "✅" if done else "⏳"
         st.markdown(f"{icon} {step}")
+
 
 
 # =============================================================

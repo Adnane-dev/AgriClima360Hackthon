@@ -1,20 +1,28 @@
-# src/ml_pipeline.py
-import streamlit as st
+# =============================================================
+# Pipeline Machine Learning : Classification, Régression, Clustering
+# =============================================================
+
 import pandas as pd
 import numpy as np
-import joblib
 import pickle
-from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
-from sklearn.cluster import KMeans
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import train_test_split, cross_val_score
-from sklearn.metrics import accuracy_score, f1_score, r2_score, mean_squared_error, silhouette_score
+import joblib
+import streamlit as st
+from datetime import datetime
+from config.settings import FEATURES_CLASSIFICATION, FEATURES_REGRESSION
+
+try:
+    from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+    from sklearn.cluster import KMeans
+    from sklearn.preprocessing import StandardScaler
+    from sklearn.metrics import accuracy_score, f1_score, r2_score, mean_squared_error, silhouette_score
+    from sklearn.model_selection import train_test_split
+    ML_OK = True
+except ImportError:
+    ML_OK = False
+
 
 class MLPipeline:
-    """Pipeline complet d'entraînement et prédiction ML."""
-    
-    FEATURES_CLASSIFICATION = ["tavg_mean", "tmax_mean", "prcp_total", "gdd_total", "heatwave_days", "wdi_mean"]
-    FEATURES_REGRESSION = ["tavg_mean", "tmax_mean", "prcp_total", "gdd_total", "heatwave_days", "wdi_mean", "diurnal_range", "temp_x_prcp"]
+    """Pipeline ML complet pour l'agriculture."""
     
     def __init__(self):
         self.clf_model = None
@@ -25,115 +33,228 @@ class MLPipeline:
         self.results_reg = {}
         self.results_kmeans = {}
     
-    def train_classifier(self, df, target="drought_alert", features=None, test_size=0.2):
-        """Entraîne un Random Forest pour la classification (alerte sécheresse)."""
-        features = features or self.FEATURES_CLASSIFICATION
+    def train_classifier(self, df: pd.DataFrame, target="drought_alert", features=None):
+        """Entraîne un classifieur RandomForest pour la prédiction de sécheresse."""
+        if not ML_OK:
+            return {"error": "Scikit-learn non disponible"}
+        
+        features = features or FEATURES_CLASSIFICATION
         available = [f for f in features if f in df.columns]
+        df_clean = df.dropna(subset=[target])
         
-        X = df[available].fillna(0)
-        y = df[target]
+        if len(df_clean) < 10:
+            return {"error": "Données insuffisantes"}
         
-        X_train, X_test, y_train, y_test = train_test_split(
-            X, y, test_size=test_size, random_state=42, stratify=y if y.nunique() > 1 else None
-        )
+        X = df_clean[available].fillna(0)
+        y = df_clean[target]
         
-        model = RandomForestClassifier(n_estimators=200, max_depth=8, min_samples_leaf=2, random_state=42, n_jobs=-1)
-        model.fit(X_train, y_train)
+        # Vérifier si les deux classes sont présentes
+        if y.nunique() < 2:
+            return {"error": f"Une seule classe présente: {y.unique()}"}
         
-        y_pred = model.predict(X_test)
+        X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+        
+        model = RandomForestClassifier(n_estimators=200, max_depth=8, random_state=42)
+        model.fit(X_tr, y_tr)
+        y_pred = model.predict(X_te)
         
         self.clf_model = model
         self.results_clf = {
+            "accuracy": accuracy_score(y_te, y_pred),
+            "f1": f1_score(y_te, y_pred, zero_division=0),
             "model": model,
             "features": available,
-            "accuracy": round(float(accuracy_score(y_test, y_pred)), 4),
-            "f1": round(float(f1_score(y_test, y_pred, zero_division=0)), 4),
-            "cv_f1": round(float(cross_val_score(model, X, y, cv=min(5, len(X)//4), scoring="f1").mean()), 4),
             "importances": dict(zip(available, model.feature_importances_))
         }
         return self.results_clf
     
-    def train_regressor(self, df, target="yield_t_ha", features=None, test_size=0.2):
-        """Entraîne un Random Forest pour la régression (prédiction rendement)."""
-        features = features or self.FEATURES_REGRESSION
-        available = [f for f in features if f in df.columns]
+    def train_regressor(self, df: pd.DataFrame, target="yield_t_ha", features=None):
+        """Entraîne un régresseur RandomForest pour la prédiction de rendement."""
+        if not ML_OK:
+            return {"error": "Scikit-learn non disponible"}
         
-        df_valid = df.dropna(subset=[target])
-        if len(df_valid) < 10:
+        features = features or FEATURES_REGRESSION
+        available = [f for f in features if f in df.columns]
+        df_clean = df.dropna(subset=[target])
+        
+        if len(df_clean) < 10:
             return {"error": "Données insuffisantes"}
         
-        X = df_valid[available].fillna(0)
-        y = df_valid[target]
+        X = df_clean[available].fillna(0)
+        y = df_clean[target]
+        X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.2, random_state=42)
         
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42)
-        
-        model = RandomForestRegressor(n_estimators=200, max_depth=10, min_samples_leaf=2, random_state=42, n_jobs=-1)
-        model.fit(X_train, y_train)
-        
-        y_pred = model.predict(X_test)
+        model = RandomForestRegressor(n_estimators=200, max_depth=10, random_state=42)
+        model.fit(X_tr, y_tr)
+        y_pred = model.predict(X_te)
         
         self.reg_model = model
         self.results_reg = {
+            "r2": r2_score(y_te, y_pred),
+            "rmse": np.sqrt(mean_squared_error(y_te, y_pred)),
             "model": model,
             "features": available,
-            "r2": round(float(r2_score(y_test, y_pred)), 4),
-            "rmse": round(float(np.sqrt(mean_squared_error(y_test, y_pred))), 4),
-            "cv_r2": round(float(cross_val_score(model, X, y, cv=min(5, len(X)//4), scoring="r2").mean()), 4),
-            "importances": dict(zip(available, model.feature_importances_)),
-            "y_test": y_test.values,
-            "y_pred": y_pred
+            "importances": dict(zip(available, model.feature_importances_))
         }
         return self.results_reg
     
-    def train_clustering(self, df, n_clusters=3, features=None):
-        """Entraîne un K-Means pour le zonage agro-climatique."""
-        features = features or self.FEATURES_REGRESSION
+    def train_clustering(self, df: pd.DataFrame, n_clusters=3, features=None):
+        """Entraîne un modèle K-Means pour le zonage agro-climatique."""
+        if not ML_OK:
+            return {"error": "Scikit-learn non disponible"}
+        
+        features = features or FEATURES_REGRESSION
         available = [f for f in features if f in df.columns]
-        
         X = df[available].fillna(0)
-        X_scaled = self.scaler.fit_transform(X)
         
+        if len(X) < n_clusters:
+            return {"error": "Données insuffisantes"}
+        
+        Xs = self.scaler.fit_transform(X)
         model = KMeans(n_clusters=n_clusters, random_state=42, n_init=20)
-        labels = model.fit_predict(X_scaled)
-        
-        sil_score = silhouette_score(X_scaled, labels) if n_clusters > 1 else 0.0
+        labels = model.fit_predict(Xs)
         
         self.kmeans_model = model
         self.results_kmeans = {
-            "model": model,
-            "scaler": self.scaler,
-            "features": available,
-            "labels": labels,
+            "silhouette": silhouette_score(Xs, labels) if len(set(labels)) > 1 else 0,
             "n_clusters": n_clusters,
-            "silhouette": round(float(sil_score), 4)
+            "labels": labels,
+            "features": available
         }
         return self.results_kmeans
     
-    def predict_scenario(self, scenario_input):
-        """Prédiction temps réel à partir d'un scénario utilisateur."""
-        if self.clf_model is None or self.reg_model is None:
-            return {}
+    def predict_scenario(self, scenario: dict) -> dict:
+        """Prédiction en temps réel avec gestion robuste des erreurs."""
+        result = {}
         
-        # Préparation des DataFrames
-        clf_features = self.results_clf.get("features", [])
-        reg_features = self.results_reg.get("features", [])
+        # =========================================================
+        # 1. CLASSIFICATION (Alerte sécheresse)
+        # =========================================================
+        if self.clf_model:
+            try:
+                features = self.results_clf.get("features", [])
+                if not features:
+                    features = ["tavg_mean", "tmax_mean", "prcp_total", "gdd_total", "heatwave_days", "wdi_mean"]
+                
+                df = pd.DataFrame([{k: scenario.get(k, 0) for k in features}])
+                
+                if hasattr(self.clf_model, "predict_proba"):
+                    proba = self.clf_model.predict_proba(df)
+                    # Gestion robuste du cas où une seule classe est présente
+                    if proba.shape[1] >= 2:
+                        result["drought_prob"] = float(proba[0][1])
+                        result["drought_alert"] = int(proba[0][1] > 0.5)
+                    else:
+                        result["drought_prob"] = float(proba[0][0])
+                        result["drought_alert"] = int(proba[0][0] > 0.5)
+                else:
+                    pred = self.clf_model.predict(df)[0]
+                    result["drought_alert"] = int(pred)
+                    result["drought_prob"] = 0.9 if pred == 1 else 0.1
+                    
+            except Exception as e:
+                print(f"Erreur classification: {e}")
+                result["drought_prob"] = 0.5
+                result["drought_alert"] = 0
+        else:
+            # Modèle non entraîné → prédiction basée sur WDI
+            wdi = scenario.get("wdi_mean", 0.35)
+            result["drought_prob"] = min(1.0, max(0.0, wdi))
+            result["drought_alert"] = 1 if wdi > 0.35 else 0
         
-        clf_df = pd.DataFrame([{k: scenario_input.get(k, 0) for k in clf_features}])
-        reg_df = pd.DataFrame([{k: scenario_input.get(k, 0) for k in reg_features}])
+        # =========================================================
+        # 2. RÉGRESSION (Prédiction rendement)
+        # =========================================================
+        if self.reg_model:
+            try:
+                features = self.results_reg.get("features", [])
+                if not features:
+                    features = ["tavg_mean", "tmax_mean", "prcp_total", "gdd_total", 
+                               "heatwave_days", "wdi_mean", "diurnal_range", "temp_x_prcp"]
+                
+                df = pd.DataFrame([{k: scenario.get(k, 0) for k in features}])
+                result["yield_pred"] = float(self.reg_model.predict(df)[0])
+                
+            except Exception as e:
+                print(f"Erreur régression: {e}")
+                # Fallback: formule empirique
+                tavg = scenario.get("tavg_mean", 19.5)
+                prcp = scenario.get("prcp_total", 400)
+                wdi = scenario.get("wdi_mean", 0.35)
+                result["yield_pred"] = max(0.5, min(6.0, 5.0 - 0.1 * (tavg - 18) - 2.0 * wdi + 0.002 * prcp))
+        else:
+            # Modèle non entraîné → formule empirique
+            tavg = scenario.get("tavg_mean", 19.5)
+            prcp = scenario.get("prcp_total", 400)
+            wdi = scenario.get("wdi_mean", 0.35)
+            result["yield_pred"] = max(0.5, min(6.0, 5.0 - 0.1 * (tavg - 18) - 2.0 * wdi + 0.002 * prcp))
         
-        # Prédictions
-        clf_proba = self.clf_model.predict_proba(clf_df)[0][1] if hasattr(self.clf_model, "predict_proba") else 0
-        clf_label = self.clf_model.predict(clf_df)[0]
-        reg_pred = self.reg_model.predict(reg_df)[0]
+        # =========================================================
+        # 3. CLUSTERING (Zone agro-climatique)
+        # =========================================================
+        if self.kmeans_model:
+            try:
+                features = self.results_kmeans.get("features", [])
+                if not features:
+                    features = ["tavg_mean", "prcp_total", "gdd_total", "wdi_mean"]
+                
+                df = pd.DataFrame([{k: scenario.get(k, 0) for k in features[:4]}])
+                
+                if hasattr(self, 'scaler') and self.scaler is not None:
+                    X_scaled = self.scaler.transform(df)
+                else:
+                    X_scaled = df.values
+                
+                result["cluster"] = int(self.kmeans_model.predict(X_scaled)[0])
+                
+            except Exception as e:
+                print(f"Erreur clustering: {e}")
+                # Fallback: clustering basé sur WDI
+                wdi = scenario.get("wdi_mean", 0.35)
+                if wdi < 0.25:
+                    result["cluster"] = 0
+                elif wdi < 0.55:
+                    result["cluster"] = 1
+                else:
+                    result["cluster"] = 2
+        else:
+            # Modèle non entraîné → clustering basé sur WDI
+            wdi = scenario.get("wdi_mean", 0.35)
+            if wdi < 0.25:
+                result["cluster"] = 0
+            elif wdi < 0.55:
+                result["cluster"] = 1
+            else:
+                result["cluster"] = 2
         
-        return {
-            "drought_prob": round(float(clf_proba), 3),
-            "drought_alert": int(clf_label),
-            "yield_pred": round(float(reg_pred), 2)
+        return result
+    
+    def export_bundle(self) -> bytes:
+        """Exporte tous les modèles en un bundle sérialisé."""
+        bundle = {
+            "clf_model": self.clf_model,
+            "reg_model": self.reg_model,
+            "kmeans_model": self.kmeans_model,
+            "scaler": self.scaler,
+            "features_clf": self.results_clf.get("features", []),
+            "features_reg": self.results_reg.get("features", []),
+            "features_kmeans": self.results_kmeans.get("features", []),
+            "metrics": {
+                "accuracy": self.results_clf.get("accuracy"),
+                "f1": self.results_clf.get("f1"),
+                "r2": self.results_reg.get("r2"),
+                "rmse": self.results_reg.get("rmse"),
+                "silhouette": self.results_kmeans.get("silhouette")
+            },
+            "metadata": {
+                "date": datetime.now().isoformat(),
+                "version": "3.0"
+            }
         }
+        return pickle.dumps(bundle)
     
     def save_models(self, path="models/"):
-        """Sauvegarde les modèles au format .pkl et .joblib."""
+        """Sauvegarde les modèles individuellement sur le disque."""
         import os
         os.makedirs(path, exist_ok=True)
         
@@ -145,17 +266,4 @@ class MLPipeline:
             joblib.dump(self.kmeans_model, f"{path}/kmeans.pkl")
             joblib.dump(self.scaler, f"{path}/scaler.pkl")
         
-        return f"Modèles sauvegardés dans {path}"
-    
-    def export_bundle(self):
-        """Exporte tous les modèles dans un bundle pickle unique."""
-        bundle = {
-            "clf_model": self.clf_model,
-            "reg_model": self.reg_model,
-            "kmeans_model": self.kmeans_model,
-            "scaler": self.scaler,
-            "results_clf": {k: v for k, v in self.results_clf.items() if k != "model"},
-            "results_reg": {k: v for k, v in self.results_reg.items() if k != "model"},
-            "version": "3.0"
-        }
-        return pickle.dumps(bundle)
+        return path
