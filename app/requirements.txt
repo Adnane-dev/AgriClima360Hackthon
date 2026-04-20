@@ -1,55 +1,9 @@
-# =============================================================
-# REQUIREMENTS.TXT - AgriClima360
-# Version stable pour Streamlit Cloud
-# =============================================================
-
-# Core (versions stables, compatibles Streamlit Cloud)
-streamlit==1.35.0
-pandas==2.2.0
-numpy==1.26.3
+streamlit==1.31.1
+pandas==2.1.4
+numpy==1.24.3
 plotly==5.18.0
-
-# Machine Learning
-scikit-learn==1.4.0
-joblib==1.3.2
-
-# API & Utilitaires
+scikit-learn==1.3.2
 requests==2.31.0
+joblib==1.3.2
 python-dotenv==1.0.0
-
-# =============================================================
-# OPTIONNEL - Décommenter si besoin de Big Data / Dask
-# Attention : peut augmenter le temps de déploiement
-# =============================================================
-# dask[complete]==2025.3.0
-# distributed==2025.3.0
-# cloudpickle==3.0.0
-
-# =============================================================
-# OPTIONNEL - Visualisation avancée (décommenter si besoin)
-# =============================================================
-# bokeh==3.4.0
-# datashader==0.16.0
-# holoviews==1.18.0
-# hvplot==0.9.0
-
-# =============================================================
-# OPTIONNEL - Scientific Computing
-# =============================================================
-# scipy==1.13.0
-# numba==0.59.0
-
-# =============================================================
-# NOTES D'INSTALLATION
-# =============================================================
-# Installation complète :
-# pip install -r requirements.txt
-#
-# Installation minimale (recommandée pour Streamlit Cloud) :
-# pip install streamlit pandas numpy plotly scikit-learn joblib requests
-#
-# ⚠️ CONSEIL :
-# Pour Streamlit Cloud, gardez ce fichier léger.
-# Les dépendances optionnelles sont commentées.
-# Décommentez UNIQUEMENT si vous les utilisez vraiment.
-# =============================================================
+pyyaml==6.0.1
