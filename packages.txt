@@ -1,4 +1,4 @@
-# packages.txt - Dépendances système pour Streamlit Cloud
+
 libjpeg-dev
 zlib1g-dev
 libpng-dev
