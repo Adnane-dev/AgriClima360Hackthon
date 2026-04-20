@@ -84,9 +84,9 @@ with st.sidebar:
     """, unsafe_allow_html=True)
     # NOUVEAU : LIEN VERS L'APPLICATION DE VISUALISATION
     # =============================================================
-    st.markdown("### 🌍 AgriClima360 ")
+    st.markdown("###  AgriClima360 World ")
     st.markdown("""
-    <div style="background: #fffff5; border-radius: 8px; padding: 12px; margin: 8px 0; text-align: center;">
+    <div style="background: #fffff9; border-radius: 8px; padding: 12px; margin: 8px 0; text-align: center;">
         <a href="https://adnane-dev-climat-imapct-agricole-appstreamlit-app-tcnmcu.streamlit.app/" target="_blank" style="
             color: #4ade80; 
             text-decoration: none; 
